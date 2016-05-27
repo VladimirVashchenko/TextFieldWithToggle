@@ -3,41 +3,31 @@ package customComponent;
 import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 
 class CustomSkin extends TextFieldSkin {
 
-    private StackPane rightButton;
     protected TextField textField;
-    final Group group1;
-    final Group group2;
+    final Group openEye;
+    final Group closedEye;
     private final ToggleButton toggleButton = new ToggleButton();
-    private static BooleanProperty MASK_PROPERTY= new SimpleBooleanProperty(true);
-
+    private boolean mask = true;
 
     public CustomSkin(final TextField textField) {
         super(textField);
 
         this.textField = textField;
 
-        rightButton = new StackPane();
-        rightButton.getStyleClass().setAll("right-button");
-        rightButton.setFocusTraversable(false);
-
-
-
-
+        toggleButton.setCursor(Cursor.DEFAULT);
+        toggleButton.setManaged(false);
+        toggleButton.setVisible(false);
 
 
         SVGPath path1 = new SVGPath();
@@ -87,44 +77,39 @@ class CustomSkin extends TextFieldSkin {
                 "\t\tc-2.361-0.02-6.424,1.019-6.594,1.063c-3.15,0.815-4.159,1.598-6.5,1.563c-1.181-0.018-2.186-0.256-2.844-1\n" +
                 "\t\tC0.269,6.515,0.11,6.072,0.031,5.761z");
 
-        group1 = new Group();
-        group2 = new Group();
+        openEye = new Group();
+        closedEye = new Group();
 
-        group1.getChildren().addAll(path1, path2);
-        group2.getChildren().addAll(path3, path4);
+        openEye.getChildren().addAll(path1, path2);
+        closedEye.getChildren().addAll(path3, path4);
 
-        rightButton.getChildren().add(group1);
+        toggleButton.setGraphic(closedEye);
+        toggleButton.setFocusTraversable(false);
 
-
-
-
-
-
-
-
-
-//        rightButtonGraphic.setFocusTraversable(false);
-
-//        rightButtonGraphic.setMaxWidth(Region.USE_PREF_SIZE);
-//        rightButtonGraphic.setMaxHeight(Region.USE_PREF_SIZE);
-
-        rightButton.setVisible(true);
-//        rightButtonGraphic.setVisible(false);
-
-        //rightButton.getChildren().add(rightButtonGraphic);
-        getChildren().add(rightButton);
+        toggleButton.setOnAction(event -> {
+            textField.setText(textField.getText());
+            textField.end();
+        });
 
 
+        toggleButton.selectedProperty().addListener((observable1, oldValue, newValue) -> {
+            if (newValue) {
+                mask = false;
+                toggleButton.setGraphic(openEye);
+            } else {
+                mask = true;
+                toggleButton.setGraphic(closedEye);
+            }
+        });
+        textField.textProperty().addListener(observable -> {
+            toggleButton.visibleProperty().set(!textField.textProperty().get().isEmpty());
+        });
 
-    }
-
-    public BooleanProperty getMaskProperty(){
-        return MASK_PROPERTY;
     }
 
     @Override
     protected String maskText(String txt) {
-        if (!MASK_PROPERTY.getValue()/*value*/) {
+        if (getSkinnable() instanceof PasswordField && !mask) {
             int n = txt.length();
             StringBuilder passwordBuilder = new StringBuilder(n);
             for (int i = 0; i < n; i++) {
@@ -140,14 +125,16 @@ class CustomSkin extends TextFieldSkin {
     @Override
     protected void layoutChildren(double x, double y, double w, double h) {
         super.layoutChildren(x, y, w, h);
+        System.out.println("x-" + x + " y-" + y + " w-" + w + " h-" + h);
+        if (toggleButton.getParent() != textField) {
+            getChildren().add(toggleButton);
+            toggleButton.resize(snapSize(openEye.prefWidth(-1)), h);
+            textField.setStyle("-fx-padding: 0.25em " + (h + 10) + "  0.333333em 0.416667em;");
+        }
 
-        final double clearGraphicWidth = snapSize(group1.prefWidth(-1));
-        final double clearButtonWidth = rightButton.snappedLeftInset() + clearGraphicWidth + rightButton.snappedRightInset();
 
-        rightButton.resize(clearButtonWidth, h);
-        positionInArea(rightButton,
-                (x+w) - clearButtonWidth, y,
-                clearButtonWidth, h, 0, HPos.CENTER, VPos.CENTER);
+        positionInArea(toggleButton, textField.getWidth() - toggleButton.getWidth(), y, snapSize(openEye.prefWidth(-1)), h, 0, HPos.CENTER, VPos.CENTER);
+        System.out.println("\n" + textField.getWidth() + "\n");
     }
 
 }
