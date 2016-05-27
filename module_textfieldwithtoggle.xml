@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_textfieldwithtoggle" default="compile.module.textfieldwithtoggle">
+  <dirname property="module.textfieldwithtoggle.basedir" file="${ant.file.module_textfieldwithtoggle}"/>
+  
+  <property name="module.jdk.home.textfieldwithtoggle" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.textfieldwithtoggle" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.textfieldwithtoggle" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.textfieldwithtoggle" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="textfieldwithtoggle.output.dir" value="${idea.home}/projects/TextFieldWithToggle/out/production/TextFieldWithToggle"/>
+  <property name="textfieldwithtoggle.testoutput.dir" value="${idea.home}/projects/TextFieldWithToggle/out/test/TextFieldWithToggle"/>
+  
+  <path id="textfieldwithtoggle.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="textfieldwithtoggle.module.production.classpath">
+    <path refid="${module.jdk.classpath.textfieldwithtoggle}"/>
+  </path>
+  
+  <path id="textfieldwithtoggle.runtime.production.module.classpath">
+    <pathelement location="${textfieldwithtoggle.output.dir}"/>
+  </path>
+  
+  <path id="textfieldwithtoggle.module.classpath">
+    <path refid="${module.jdk.classpath.textfieldwithtoggle}"/>
+    <pathelement location="${textfieldwithtoggle.output.dir}"/>
+  </path>
+  
+  <path id="textfieldwithtoggle.runtime.module.classpath">
+    <pathelement location="${textfieldwithtoggle.testoutput.dir}"/>
+    <pathelement location="${textfieldwithtoggle.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.textfieldwithtoggle">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.textfieldwithtoggle">
+    <patternset refid="excluded.from.module.textfieldwithtoggle"/>
+  </patternset>
+  
+  <path id="textfieldwithtoggle.module.sourcepath">
+    <dirset dir="${idea.home}/projects/TextFieldWithToggle">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.textfieldwithtoggle" depends="compile.module.textfieldwithtoggle.production,compile.module.textfieldwithtoggle.tests" description="Compile module TextFieldWithToggle"/>
+  
+  <target name="compile.module.textfieldwithtoggle.production" description="Compile module TextFieldWithToggle; production classes">
+    <mkdir dir="${textfieldwithtoggle.output.dir}"/>
+    <javac destdir="${textfieldwithtoggle.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.textfieldwithtoggle}/javac">
+      <compilerarg line="${compiler.args.textfieldwithtoggle}"/>
+      <bootclasspath refid="textfieldwithtoggle.module.bootclasspath"/>
+      <classpath refid="textfieldwithtoggle.module.production.classpath"/>
+      <src refid="textfieldwithtoggle.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.textfieldwithtoggle"/>
+    </javac>
+    
+    <copy todir="${textfieldwithtoggle.output.dir}">
+      <fileset dir="${idea.home}/projects/TextFieldWithToggle/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.textfieldwithtoggle.tests" depends="compile.module.textfieldwithtoggle.production" description="compile module TextFieldWithToggle; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.textfieldwithtoggle" description="cleanup module">
+    <delete dir="${textfieldwithtoggle.output.dir}"/>
+    <delete dir="${textfieldwithtoggle.testoutput.dir}"/>
+  </target>
+</project>
