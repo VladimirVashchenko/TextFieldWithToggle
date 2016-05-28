@@ -15,7 +15,5 @@ public class CustomTextField extends PasswordField {
         customSkin = new CustomSkin(this);
         return customSkin;
     }
-
-
 }
 
