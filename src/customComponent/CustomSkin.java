@@ -1,6 +1,7 @@
 package customComponent;
 
 import com.sun.javafx.scene.control.skin.TextFieldSkin;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Cursor;
@@ -106,7 +107,7 @@ class CustomSkin extends TextFieldSkin {
     @Override
     protected String maskText(String txt) {
         if (!toggleButton.selectedProperty().get() && getSkinnable() instanceof PasswordField) {
-            toggleButton.setGraphic(closedEye);
+            Platform.runLater(()->toggleButton.setGraphic(closedEye));
             int n = txt.length();
             StringBuilder passwordBuilder = new StringBuilder(n);
             for (int i = 0; i < n; i++) {
@@ -115,7 +116,7 @@ class CustomSkin extends TextFieldSkin {
 
             return passwordBuilder.toString();
         } else {
-            toggleButton.setGraphic(openEye);
+            Platform.runLater(()->toggleButton.setGraphic(openEye));
             return txt;
         }
     }
